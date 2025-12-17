@@ -1,0 +1,122 @@
+.transactions-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #d5d8dc;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.transactions-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2e4053;
+}
+
+.transactions-error {
+  color: #d32f2f;
+  margin-bottom: 16px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.transactions-date-filter {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.transactions-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.transactions-input {
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  transition: border 0.2s;
+}
+
+.transactions-input:focus {
+  border-color: #2e4053;
+}
+
+.transactions-button {
+  padding: 12px;
+  border: none;
+  border-radius: 16px;
+  background-color: #2e4053;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.transactions-button:hover {
+  background-color: #415264;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.transactions-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.transactions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transactions-item {
+  border: 1px solid #ddd;
+  padding: 14px 16px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+}
+
+.transactions-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transactions-meta {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.transactions-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.transactions-action-button {
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: #2e4053;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.transactions-action-button:hover {
+  background-color: #d1d5db;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}

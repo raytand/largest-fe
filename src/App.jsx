@@ -5,12 +5,15 @@ import Categories from "./pages/Categories.jsx";
 import Transactions from "./pages/Transactions.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import { Routes, Route } from "react-router-dom";
+import { useLocation, Routes, Route } from "react-router-dom";
 
 export default function App() {
+  const location = useLocation();
+  const hideNavbar =
+    location.pathname === "/login" || location.pathname === "/register";
   return (
     <>
-      <Navbar />
+      {!hideNavbar && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/balances" element={<Balances />} />

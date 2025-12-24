@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   fetchGet,
   fetchPost,
@@ -12,6 +14,7 @@ export default function Balances() {
   const token = localStorage.getItem("authToken");
   if (token) setToken(token);
 
+  const navigate = useNavigate();
   const [balances, setBalances] = useState([]);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState(0);
@@ -24,6 +27,7 @@ export default function Balances() {
       setBalances(data);
     } catch (e) {
       setError(e.message);
+      navigate("/login");
     }
   };
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { fetchGet, fetchPost, fetchDelete, setToken } from "../api/api";
+import { useNavigate } from "react-router-dom";
 import "./Categories.css";
 
 export default function Categories() {
   const token = localStorage.getItem("authToken");
   if (token) setToken(token);
 
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
@@ -15,6 +17,7 @@ export default function Categories() {
       const data = await fetchGet("/categories");
       setCategories(data);
     } catch (e) {
+      navigate("/login");
       setError(e.message);
     }
   };
@@ -74,7 +77,10 @@ export default function Categories() {
       <ul className="categories-list">
         {categories.map((c) => (
           <li key={c.id} className="categories-item">
-            <span className="categories-text">{c.name}</span>
+            <span className="categories-text">
+              {c.name} {c.isIncome ? "➕" : "➖"}
+            </span>
+
             <button
               onClick={() => remove(c.id)}
               className="categories-action-button"

@@ -69,6 +69,11 @@ export default function Register() {
           Register
         </button>
       </form>
+      <div class="register-container" style={{ textAlign: "center" }}>
+        <button className="register-button" onClick={() => navigate("/login")}>
+          Login
+        </button>
+      </div>
     </div>
   );
 }

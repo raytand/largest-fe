@@ -54,6 +54,20 @@
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-register-button {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  min-width: 80px;
+  background-color: aquamarine;
+}
+
 .login-button:hover {
   background-color: #425263;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

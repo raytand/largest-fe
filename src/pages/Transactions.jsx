@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { fetchGet, fetchPost, fetchDelete, setToken } from "../api/api";
+import { useNavigate } from "react-router-dom";
 import "./Transactions.css";
 
 export default function Transactions() {
   const token = localStorage.getItem("authToken");
   if (token) setToken(token);
 
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [balances, setBalances] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -32,6 +34,7 @@ export default function Transactions() {
       );
       setTransactions(data);
     } catch (e) {
+      navigate("/login");
       setError(e.message);
     }
   };
@@ -80,13 +83,15 @@ export default function Transactions() {
       setAmount("");
       setDescription("");
       setCategoryId("");
+
+      await loadBalances();
       loadTransactions();
     } catch (e) {
       if (e?.errors) {
         const first = Object.values(e.errors)[0][0];
         setError(first);
       } else {
-        setError(e.message);
+        setError(e.message || e.error || "Unknown error");
       }
     }
   };
@@ -133,22 +138,41 @@ export default function Transactions() {
           <option value="">Select balance</option>
           {balances.map((b) => (
             <option key={b.id} value={b.id}>
-              {b.name}
+              {b.name} - {b.amount} {b.currency}
             </option>
           ))}
         </select>
-
+        <div className="transactions-checkbox">
+          <input
+            type="checkbox"
+            checked={isIncome}
+            onChange={(e) => setIsIncome(e.target.checked)}
+          />
+          <label>Income</label>
+        </div>
         <select
           value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+
+            if (value === "__create__") {
+              navigate("/categories");
+              return;
+            }
+
+            setCategoryId(value);
+          }}
           className="transactions-input"
         >
           <option value="">Select category</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
+          <option value="__create__">+ Create category</option>
+          {categories
+            .filter((c) => c.isIncome === isIncome)
+            .map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
         </select>
 
         <input
@@ -173,15 +197,6 @@ export default function Transactions() {
           onChange={(e) => setDescription(e.target.value)}
           className="transactions-input"
         />
-
-        <div className="transactions-checkbox">
-          <input
-            type="checkbox"
-            checked={isIncome}
-            onChange={(e) => setIsIncome(e.target.checked)}
-          />
-          <label>Income</label>
-        </div>
 
         <button onClick={create} className="transactions-button">
           Create

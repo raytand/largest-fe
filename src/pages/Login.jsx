@@ -63,6 +63,11 @@ export default function Login() {
           Login
         </button>
       </form>
+      <div class="login-container" style={{ textAlign: "center" }}>
+        <button className="login-button" onClick={() => navigate("/register")}>
+          Register
+        </button>
+      </div>
     </div>
   );
 }

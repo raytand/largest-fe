@@ -99,6 +99,8 @@ export default function Transactions() {
   const remove = async (id) => {
     try {
       await fetchDelete(`/transactions/${id}`);
+
+      await loadBalances();
       loadTransactions();
     } catch (e) {
       setError(e.message);
@@ -209,7 +211,7 @@ export default function Transactions() {
             <div className="transactions-info">
               <div>
                 {t.isIncome ? "+" : "-"}
-                {t.amount}
+                {t.amount} {t.currency}
               </div>
               <div className="transactions-meta">
                 {t.description} | {t.categoryName} | {t.balanceName}

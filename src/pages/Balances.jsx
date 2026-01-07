@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   fetchGet,
   fetchPost,
@@ -10,23 +9,31 @@ import {
 } from "../api/api";
 import "./Balances.css";
 
+const roleLabel = (r) => (r === 0 ? "Owner" : r === 1 ? "Editor" : "Viewer");
+
 export default function Balances() {
   const token = localStorage.getItem("authToken");
   if (token) setToken(token);
 
   const navigate = useNavigate();
   const [balances, setBalances] = useState([]);
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [currency, setCurrency] = useState("UAH");
   const [error, setError] = useState(null);
+
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState({});
+
+  const [createForm, setCreateForm] = useState({
+    name: "",
+    amount: 0,
+    currency: "UAH",
+  });
+
+  const [shareForms, setShareForms] = useState({});
 
   const load = async () => {
     try {
-      const data = await fetchGet("/balances");
-      setBalances(data);
-    } catch (e) {
-      setError(e.message);
+      setBalances(await fetchGet("/balances"));
+    } catch {
       navigate("/login");
     }
   };
@@ -35,118 +42,212 @@ export default function Balances() {
     load();
   }, []);
 
+  /* ---------- CREATE ---------- */
+
   const create = async () => {
-    setError(null);
-    if (!name.trim()) {
-      setError("Name is required");
-      return;
-    }
-    if (amount <= 0) {
-      setError("Initial amount must be greater than zero");
-      return;
-    }
+    if (!createForm.name.trim()) return;
 
-    try {
-      await fetchPost("/balances", {
-        name,
-        initialAmount: parseFloat(amount),
-        currency,
-      });
-      setName("");
-      setAmount(0);
-      setCurrency("UAH");
-      load();
-    } catch (e) {
-      if (e?.errors) {
-        const msg = Object.values(e.errors)[0][0];
-        setError(msg);
-      } else {
-        setError(e.message);
-      }
-    }
+    await fetchPost("/balances", {
+      name: createForm.name,
+      initialAmount: createForm.amount,
+      currency: createForm.currency,
+    });
+
+    setCreateForm({ name: "", amount: 0, currency: "UAH" });
+    load();
   };
 
-  const update = async (balance) => {
-    setError(null);
-    const newAmount = prompt("New amount?", balance.amount);
-    if (!newAmount) return;
-    const newName = prompt("New name?", balance.name);
-    const newCurrency = prompt("New currency?", balance.currency);
+  /* ---------- EDIT ---------- */
 
-    try {
-      await fetchPut("/balances", {
-        balanceId: balance.id,
-        amount: parseFloat(newAmount),
-        name: newName,
-        currency: newCurrency,
-      });
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
+  const startEdit = (b) => {
+    if (b.role === 2) return;
+    setEditId(b.id);
+    setEditForm({
+      name: b.name,
+      amount: b.amount,
+      currency: b.currency,
+    });
   };
 
-  const remove = async (id) => {
-    setError(null);
-    try {
-      await fetchDelete(`/balances/${id}`);
-      load();
-    } catch (e) {
-      setError(e.message);
-    }
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditForm({});
+  };
+
+  const saveEdit = async (b) => {
+    await fetchPut("/balances", {
+      balanceId: b.id,
+      name: editForm.name,
+      amount: editForm.amount,
+      currency: editForm.currency,
+    });
+
+    cancelEdit();
+    load();
+  };
+
+  /* ---------- DELETE ---------- */
+
+  const remove = async (b) => {
+    if (b.role !== 0) return alert("Only owner");
+    await fetchDelete(`/balances/${b.id}`);
+    load();
+  };
+
+  const removeUser = async (balanceId, targetUserId) => {
+    await fetchDelete(`/balances/${balanceId}/share/${targetUserId}`);
+    load();
+  };
+
+  /* ---------- SHARE ---------- */
+
+  const share = async (b) => {
+    const f = shareForms[b.id];
+    if (!f?.email) return;
+
+    await fetchPost(`/balances/share/${b.id}`, {
+      email: f.email,
+      role: f.role,
+    });
+
+    setShareForms((s) => ({ ...s, [b.id]: { email: "", role: 2 } }));
+    load();
   };
 
   return (
     <div className="balances-container">
       <h2 className="balances-title">Balances</h2>
 
-      {error && <div className="balances-error">{error}</div>}
-
+      {/* CREATE */}
       <div className="balances-form">
         <input
+          className="balances-input"
           placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="balances-input"
+          value={createForm.name}
+          onChange={(e) =>
+            setCreateForm({ ...createForm, name: e.target.value })
+          }
         />
         <input
-          placeholder="Initial Amount"
+          className="balances-input"
           type="number"
-          value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-          className="balances-input"
+          placeholder="Amount"
+          value={createForm.amount}
+          onChange={(e) =>
+            setCreateForm({ ...createForm, amount: +e.target.value })
+          }
         />
         <input
-          placeholder="Currency"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
           className="balances-input"
+          placeholder="Currency"
+          value={createForm.currency}
+          onChange={(e) =>
+            setCreateForm({ ...createForm, currency: e.target.value })
+          }
         />
-        <button onClick={create} className="balances-button">
+        <button className="balances-button" onClick={create}>
           Create
         </button>
       </div>
 
+      {/* LIST */}
       <ul className="balances-list">
         {balances.map((b) => (
           <li key={b.id} className="balances-item">
-            <span className="balances-text">
-              {b.name}: {b.amount} {b.currency}
-            </span>
-            <div className="balances-actions">
-              <button
-                onClick={() => update(b)}
-                className="balances-action-button"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => remove(b.id)}
-                className="balances-action-button"
-              >
-                Delete
-              </button>
+            {/* HEADER */}
+            <div className="balances-header">
+              {editId === b.id ? (
+                <>
+                  <input
+                    className="balances-input"
+                    value={editForm.name}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, name: e.target.value })
+                    }
+                  />
+                  <input
+                    className="balances-input"
+                    type="number"
+                    value={editForm.amount}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, amount: +e.target.value })
+                    }
+                  />
+                  <input
+                    className="balances-input"
+                    value={editForm.currency}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, currency: e.target.value })
+                    }
+                  />
+                </>
+              ) : (
+                <>
+                  <strong>{b.name}</strong>
+                  <span>
+                    {b.amount} {b.currency}
+                  </span>
+                </>
+              )}
+
+              <span className="role-badge">{roleLabel(b.role)}</span>
             </div>
+
+            {/* USERS */}
+            <div className="balances-users">
+              {b.users.map((u, i) => (
+                <div key={i}>
+                  {u.email} — {roleLabel(u.role)}{" "}
+                  <button onClick={() => removeUser(b.id, u.userId)}>
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* ACTIONS */}
+            <div className="balances-actions">
+              {editId === b.id ? (
+                <>
+                  <button onClick={() => saveEdit(b)}>Save</button>
+                  <button onClick={cancelEdit}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => startEdit(b)}>Edit</button>
+                  <button onClick={() => remove(b)}>Delete</button>
+                </>
+              )}
+            </div>
+
+            {/* SHARE */}
+            {b.role === 0 && (
+              <div className="share-form">
+                <input
+                  placeholder="User email"
+                  value={shareForms[b.id]?.email || ""}
+                  onChange={(e) =>
+                    setShareForms((s) => ({
+                      ...s,
+                      [b.id]: { ...(s[b.id] || {}), email: e.target.value },
+                    }))
+                  }
+                />
+                <select
+                  value={shareForms[b.id]?.role ?? 2}
+                  onChange={(e) =>
+                    setShareForms((s) => ({
+                      ...s,
+                      [b.id]: { ...(s[b.id] || {}), role: +e.target.value },
+                    }))
+                  }
+                >
+                  <option value={1}>Editor</option>
+                  <option value={2}>Viewer</option>
+                </select>
+                <button onClick={() => share(b)}>Share</button>
+              </div>
+            )}
           </li>
         ))}
       </ul>

@@ -1,64 +1,79 @@
 .balances-container {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 30px;
-  background: #d5d8dc;
-  border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 720px;
+  margin: 48px auto;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 12px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
 .balances-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 20px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 24px;
   text-align: center;
-  color: #2e4053;
+  color: #111827;
 }
 
 .balances-error {
-  color: #d32f2f;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 8px;
   margin-bottom: 16px;
-  text-align: center;
-  font-weight: 500;
 }
 
+/* ---------- CREATE FORM ---------- */
+
 .balances-form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
 .balances-input {
-  padding: 12px 16px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  font-size: 1rem;
-  outline: none;
-  transition: border 0.2s;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
 }
 
 .balances-input:focus {
-  border-color: #3b82f6;
+  outline: none;
+  border-color: #6366f1;
 }
 
-.balances-button {
-  padding: 14px;
+/* ---------- BUTTONS ---------- */
+
+.balances-button,
+.balances-action-button,
+.share-form button {
+  padding: 10px 14px;
+  border-radius: 8px;
   border: none;
-  border-radius: 16px;
-  background-color: #2e4053;
+  background: #111827;
   color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-.balances-button:hover {
-  background-color: #2563eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.balances-action-button {
+  background: #e5e7eb;
+  color: #111827;
 }
+
+.balances-action-button:hover {
+  background: #d1d5db;
+}
+
+.balances-button:hover,
+.share-form button:hover {
+  background: #1f2937;
+}
+
+/* ---------- LIST ---------- */
 
 .balances-list {
   list-style: none;
@@ -70,35 +85,100 @@
 }
 
 .balances-item {
-  border: 1px solid #ddd;
-  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---------- HEADER ---------- */
+
+.balances-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fafafa;
+  gap: 12px;
 }
 
-.balances-text {
+.balances-header strong {
   font-size: 1rem;
-  color: #333;
+  font-weight: 500;
+  color: #111827;
 }
+
+.balances-header span {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* ---------- ROLE ---------- */
+
+.role-badge {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* ---------- USERS ---------- */
+
+.balances-users {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #374151;
+  padding-left: 2px;
+}
+
+/* ---------- ACTIONS ---------- */
 
 .balances-actions {
   display: flex;
   gap: 8px;
 }
 
-.balances-action-button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 12px;
-  background-color: #e5e7eb;
-  cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s;
+/* ---------- SHARE ---------- */
+
+.share-form {
+  display: grid;
+  grid-template-columns: 1fr 140px auto;
+  gap: 8px;
+  margin-top: 6px;
 }
 
-.balances-action-button:hover {
-  background-color: #d1d5db;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.share-form input,
+.share-form select {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.share-form input:focus,
+.share-form select:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 640px) {
+  .balances-form {
+    grid-template-columns: 1fr;
+  }
+
+  .share-form {
+    grid-template-columns: 1fr;
+  }
+
+  .balances-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

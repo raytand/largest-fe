@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchGet, setToken } from "../api/api";
-import "./Home.css";
+import "./styles/Home.css";
 
 export default function Home() {
   const [balances, setBalances] = useState([]);

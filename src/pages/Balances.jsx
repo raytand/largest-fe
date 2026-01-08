@@ -7,7 +7,7 @@ import {
   fetchDelete,
   setToken,
 } from "../api/api";
-import "./Balances.css";
+import "./styles/Balances.css";
 
 const roleLabel = (r) => (r === 0 ? "Owner" : r === 1 ? "Editor" : "Viewer");
 

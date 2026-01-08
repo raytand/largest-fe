@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchGet, fetchPost, fetchDelete, setToken } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import "./Categories.css";
+import "./styles/Categories.css";
 
 export default function Categories() {
   const token = localStorage.getItem("authToken");

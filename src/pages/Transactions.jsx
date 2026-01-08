@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchGet, fetchPost, fetchDelete, setToken } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import "./Transactions.css";
+import "./styles/Transactions.css";
 
 export default function Transactions() {
   const token = localStorage.getItem("authToken");
@@ -37,6 +37,33 @@ export default function Transactions() {
       navigate("/login");
       setError(e.message);
     }
+  };
+
+  const downloadPdf = async () => {
+    const res = await fetch(
+      `https://localhost:7121/api/exports/ExportTransactions?from=${fromDate}&to=${toDate}`,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("PDF download failed");
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transactions_${fromDate}_${toDate}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+
+    a.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   const loadBalances = async () => {
@@ -128,6 +155,9 @@ export default function Transactions() {
         />
         <button onClick={loadTransactions} className="transactions-button">
           Load
+        </button>
+        <button onClick={downloadPdf} className="transactions-button">
+          Download PDF
         </button>
       </div>
 
